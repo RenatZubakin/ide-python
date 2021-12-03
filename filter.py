@@ -23,10 +23,6 @@ def convert_image_to_mosaic(img_in='img2.jpg',img_out='res.jpg',block_size=10,gr
     res.save(f'{img_out}')
 
 
-convert_image_to_mosaic(img_in='img2.jpg',img_out='res.jpg',block_size=10,gradation_step=50)
-convert_image_to_mosaic(img_in='img2.jpg',img_out='res2.jpg',block_size=15,gradation_step=63)
-convert_image_to_mosaic(img_in='img2.jpg',img_out='res3.jpg',block_size=1,gradation_step=1)
-
 
 # i = 0
 # while i < a:
