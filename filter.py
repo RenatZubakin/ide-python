@@ -1,46 +1,28 @@
 from PIL import Image
 import numpy as np
 
-def editPicture(arrPixels,mozaicSize):
-    return  np.array(arrPixels[:len(arrPixels) - len(arrPixels) % mozaicSize, :len(arrPixels[0]) - len(arrPixels[0]) % mozaicSize])
 
-def setShadeOfGray(arrPixels,x,y,mozaicSize,gradation):
-    curentShade =np.concatenate(arrPixels[x:x+mozaicSize,y:y+mozaicSize]).sum()/3
-    return (curentShade// mozaicSize ** 2// gradation) * gradation
-
-def setColor(arrPixels,color,row,col,mozaicSize):
-    arrPixels[row:row + mozaicSize, col:col + mozaicSize] = [color,color,color]
-    return arrPixels
-
-def convert_image_to_mosaic(img_in='img2.jpg',img_out='res.jpg',block_size=10,gradation_step=50):
-    arrPixels=np.array(Image.open(f"{img_in}"))
-    arrPixels = editPicture(np.array(Image.open(f"img2.jpg")),block_size)
-    for row in range(0, len(arrPixels), block_size):
-        for col in range(0, len(arrPixels[1]), block_size):
-            color = setShadeOfGray(arrPixels,row,col,block_size,gradation_step)
-            arrPixels = setColor(arrPixels,color,row,col,block_size)
-    res = Image.fromarray(arrPixels)
-    res.save(f'{img_out}')
+def convert_image_to_mosaic(image, size, gradation_step):
+    for x in range(0, len(image), size):
+        for y in range(0, len(image[0]), size):
+            image[x:x + size, y:y + size] = get_average_brightness(
+                image[x:x + size, y:y + size], size, gradation_step)
+    return image
 
 
+def get_average_brightness(block, size, gradation_step):
+    average_color = (block[:size, :size].sum() / 3) // size ** 2
+    return int(average_color // gradation_step) * gradation_step
 
-# i = 0
-# while i < a:
-#     j = 0
-#     while j < a1:
-#         s = 0
-#         for n in range(i, i + 10):
-#             for n1 in range(j, j + 10):
-#                 num1 = int(arr[n][n1][0])
-#                 num2 = int(arr[n][n1][1])
-#                 num3 = int(arr[n][n1][2])
-#                 M = (num1 + num2 + num3)/3
-#                 s += M
-#         s = int(s // 100)
-#         for n in range(i, i + 10):
-#             for n1 in range(j, j + 10):
-#                 arr[n][n1][0] = int(s // 50) * 50
-#                 arr[n][n1][1] = int(s // 50) * 50
-#                 arr[n][n1][2] = int(s // 50) * 50
-#         j = j + 10
-#     i = i + 10
+
+def main():
+    image_file = Image.open(input("Введите имя файла, которое хотите конвертировать: "))
+    block_size = int(input("Введите размер блока: "))
+    gradations_count = int(input("Введите количество градаций серого: "))
+    image = np.array(image_file)
+    gradation_step = 255 // gradations_count
+    res = Image.fromarray(convert_image_to_mosaic(image, block_size, gradation_step))
+    res.save(input("Введите имя файла, в которой хотите сохранить результат: "))
+
+if __name__ == '__main__':
+    main()
